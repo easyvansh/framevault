@@ -4,6 +4,23 @@ FrameVault is a local cinematography reference engine. Version 1 searches FilmGr
 
 The project is intentionally built as a non-ML foundation first: reliable scraping, metadata persistence, preview, selection, and offline storage. Version 2 is planned for semantic search and visual analysis.
 
+## Screenshots
+
+<p align="center">
+  <strong>Home</strong><br />
+  <img src="ss/home.png" alt="FrameVault home screen" width="860" />
+</p>
+
+<p align="center">
+  <strong>Search</strong><br />
+  <img src="ss/search.png" alt="FrameVault search screen" width="860" />
+</p>
+
+<p align="center">
+  <strong>Results and Curation</strong><br />
+  <img src="ss/result.png" alt="FrameVault result and curator screen" width="860" />
+</p>
+
 ## Version 1 Features
 
 - Search FilmGrab by film title, director, cinematographer, or keyword.
