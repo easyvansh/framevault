@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { scrapeFilm, searchFilmGrab } from "../api/client";
 import FilmResultCard from "../components/FilmResultCard";
+import FrameVaultLogo from "../components/FrameVaultLogo";
 
 export default function SearchPage({ onFilmReady }) {
   const [query, setQuery] = useState("");
@@ -48,6 +49,9 @@ export default function SearchPage({ onFilmReady }) {
     <section>
       <div className="hero">
         <div className="hero-inner">
+          <div className="hero-logo-wrap">
+            <FrameVaultLogo className="hero-logo" />
+          </div>
           <div className="eyebrow">FrameVault</div>
           <h1 className="hero-title">
             Your <em>Cinematography</em> Reference. Organized. Offline.

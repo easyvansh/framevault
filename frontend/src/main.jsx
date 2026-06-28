@@ -5,6 +5,7 @@ import { listFilms } from "./api/client";
 import SearchPage from "./pages/SearchPage";
 import CuratorPage from "./pages/CuratorPage";
 import LibraryPage from "./pages/LibraryPage";
+import FrameVaultLogo from "./components/FrameVaultLogo";
 
 function App() {
   const [view, setView] = useState("search");
@@ -30,7 +31,9 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <button className="brand" onClick={() => setView("search")}>
-          <span className="brand-mark">F</span>
+          <span className="brand-mark">
+            <FrameVaultLogo className="brand-logo" />
+          </span>
           <span>
             <span className="brand-title">FrameVault</span>
             <span className="brand-subtitle">Cinematography Reference Engine</span>
