@@ -82,6 +82,23 @@ def _migrate_legacy_schema(connection: sqlite3.Connection) -> None:
         """
     )
 
+    asset_columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(media_assets)").fetchall()
+    }
+    asset_additions = {
+        "width": "INTEGER",
+        "height": "INTEGER",
+        "duration_ms": "INTEGER",
+        "frame_rate": "REAL",
+        "metadata_json": "TEXT",
+    }
+    for name, definition in asset_additions.items():
+        if name not in asset_columns:
+            connection.execute(
+                f"ALTER TABLE media_assets ADD COLUMN {name} {definition}"
+            )
+
 
 # Compatibility exports.
 #

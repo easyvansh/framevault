@@ -6,6 +6,11 @@ import os
 APP_NAME = "FrameVault"
 APP_VERSION = "1.1.0"
 MAX_UPLOAD_BYTES = int(os.getenv("FRAMEVAULT_MAX_UPLOAD_BYTES", 25 * 1024 * 1024))
+MAX_VIDEO_UPLOAD_BYTES = int(
+    os.getenv("FRAMEVAULT_MAX_VIDEO_UPLOAD_BYTES", 2 * 1024 * 1024 * 1024)
+)
+FFMPEG_PATH = os.getenv("FRAMEVAULT_FFMPEG_PATH", "ffmpeg")
+FFPROBE_PATH = os.getenv("FRAMEVAULT_FFPROBE_PATH", "ffprobe")
 
 DEFAULT_ALLOWED_ORIGINS = (
     "http://localhost:5173",

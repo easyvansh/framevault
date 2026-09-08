@@ -54,6 +54,11 @@ CREATE TABLE IF NOT EXISTS media_assets (
     managed_path TEXT NOT NULL,
     source_type TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'ready',
+    width INTEGER,
+    height INTEGER,
+    duration_ms INTEGER,
+    frame_rate REAL,
+    metadata_json TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (source_type, checksum)

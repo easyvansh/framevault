@@ -16,6 +16,11 @@ from app.scraper.filmgrab import (
 from app.services.download_service import download_images_for_film
 from app.ingestion.images import InvalidImageUpload, ingest_uploaded_image
 from app.ingestion.filmgrab import filmgrab_candidates
+from app.ingestion.video import (
+    InvalidVideoUpload,
+    VideoToolUnavailable,
+    ingest_uploaded_video,
+)
 
 
 router = APIRouter(prefix="/api", tags=["ingestion"])
@@ -35,6 +40,16 @@ def upload_images(files: list[UploadFile] = File(...)) -> dict:
         "assets": [item["asset"] for item in items],
         "frames": [item["frame"] for item in items],
     }
+
+
+@router.post("/ingestion/videos")
+def upload_video(file: UploadFile = File(...)) -> dict:
+    try:
+        return {"asset": ingest_uploaded_video(file)}
+    except InvalidVideoUpload as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except VideoToolUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/search", response_model=list[FilmResult])
