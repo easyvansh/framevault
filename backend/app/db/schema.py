@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS images (
     width INTEGER,
     height INTEGER,
     alt_text TEXT,
+    media_asset_id INTEGER,
     source_type TEXT NOT NULL DEFAULT 'filmgrab',
     source_identifier TEXT NOT NULL,
     content_hash TEXT,
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS images (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (film_id) REFERENCES films(id) ON DELETE CASCADE,
+    FOREIGN KEY (media_asset_id) REFERENCES media_assets(id) ON DELETE SET NULL,
     UNIQUE (film_id, source_url),
     UNIQUE (film_id, source_type, source_identifier)
 );
@@ -40,6 +42,21 @@ CREATE TABLE IF NOT EXISTS scrape_jobs (
     image_count INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (film_id) REFERENCES films(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS media_assets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    media_type TEXT NOT NULL,
+    original_name TEXT NOT NULL,
+    mime_type TEXT NOT NULL,
+    file_size INTEGER NOT NULL,
+    checksum TEXT NOT NULL,
+    managed_path TEXT NOT NULL,
+    source_type TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'ready',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (source_type, checksum)
 );
 
 """

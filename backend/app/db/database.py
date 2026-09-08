@@ -59,6 +59,7 @@ def _migrate_legacy_schema(connection: sqlite3.Connection) -> None:
         "content_hash": "TEXT",
         "ingestion_status": "TEXT NOT NULL DEFAULT 'active'",
         "ingested_at": "TEXT",
+        "media_asset_id": "INTEGER",
     }
 
     for name, definition in additions.items():
@@ -102,4 +103,8 @@ from app.db.repositories.frame_repository import (  # noqa: E402
     replace_film_images,
     set_frame_selected,
     set_image_selected,
+)
+from app.db.repositories.media_asset_repository import (  # noqa: E402
+    get_media_asset,
+    upsert_media_asset,
 )

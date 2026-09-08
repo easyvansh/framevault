@@ -5,6 +5,7 @@ import os
 
 APP_NAME = "FrameVault"
 APP_VERSION = "1.1.0"
+MAX_UPLOAD_BYTES = int(os.getenv("FRAMEVAULT_MAX_UPLOAD_BYTES", 25 * 1024 * 1024))
 
 DEFAULT_ALLOWED_ORIGINS = (
     "http://localhost:5173",

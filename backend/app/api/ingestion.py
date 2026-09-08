@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 
 from app.db import database
 from app.models.schemas import (
@@ -14,9 +14,27 @@ from app.scraper.filmgrab import (
     search_filmgrab,
 )
 from app.services.download_service import download_images_for_film
+from app.ingestion.images import InvalidImageUpload, ingest_uploaded_image
+from app.ingestion.filmgrab import filmgrab_candidates
 
 
 router = APIRouter(prefix="/api", tags=["ingestion"])
+
+
+@router.post("/ingestion/images")
+def upload_images(files: list[UploadFile] = File(...)) -> dict:
+    if not files:
+        raise HTTPException(status_code=422, detail="At least one image is required.")
+
+    try:
+        items = [ingest_uploaded_image(upload) for upload in files]
+    except InvalidImageUpload as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    return {
+        "assets": [item["asset"] for item in items],
+        "frames": [item["frame"] for item in items],
+    }
 
 
 @router.get("/search", response_model=list[FilmResult])
@@ -39,9 +57,12 @@ def scrape(request: ScrapeRequest) -> dict:
             request.thumbnail_url,
         )
 
-        frames = extract_images_from_film_page(
-            str(request.url)
-        )
+        frames = [
+            candidate.to_record()
+            for candidate in filmgrab_candidates(
+                extract_images_from_film_page(str(request.url))
+            )
+        ]
 
         frame_records = database.replace_film_frames(
             film["id"],

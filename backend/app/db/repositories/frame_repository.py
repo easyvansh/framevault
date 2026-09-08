@@ -18,6 +18,7 @@ def frame_from_row(row: dict) -> dict:
         "width": row.get("width"),
         "height": row.get("height"),
         "alt_text": row.get("alt_text"),
+        "media_asset_id": row.get("media_asset_id"),
         "source_type": row.get("source_type", "filmgrab"),
         "source_identifier": row.get("source_identifier") or row["source_url"],
         "content_hash": row.get("content_hash"),
@@ -42,12 +43,13 @@ def replace_film_frames(
                     width,
                     height,
                     alt_text,
+                    media_asset_id,
                     source_type,
                     source_identifier,
                     content_hash,
                     ingestion_status
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(film_id, source_type, source_identifier) DO UPDATE SET
                     source_url = excluded.source_url,
                     preview_url = COALESCE(
@@ -66,6 +68,10 @@ def replace_film_frames(
                         excluded.alt_text,
                         images.alt_text
                     ),
+                    media_asset_id = COALESCE(
+                        excluded.media_asset_id,
+                        images.media_asset_id
+                    ),
                     content_hash = COALESCE(
                         excluded.content_hash,
                         images.content_hash
@@ -80,6 +86,7 @@ def replace_film_frames(
                     frame.get("width"),
                     frame.get("height"),
                     frame.get("alt_text"),
+                    frame.get("media_asset_id"),
                     frame.get("source_type", "filmgrab"),
                     frame.get("source_identifier", frame["source_url"]),
                     frame.get("content_hash"),
