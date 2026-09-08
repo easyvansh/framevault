@@ -64,4 +64,19 @@ CREATE TABLE IF NOT EXISTS media_assets (
     UNIQUE (source_type, checksum)
 );
 
+CREATE TABLE IF NOT EXISTS frame_analyses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    frame_id INTEGER NOT NULL,
+    analyzer_name TEXT NOT NULL,
+    analyzer_version TEXT NOT NULL,
+    results_json TEXT NOT NULL,
+    execution_ms REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'completed',
+    error TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (frame_id) REFERENCES images(id) ON DELETE CASCADE,
+    UNIQUE (frame_id, analyzer_name, analyzer_version)
+);
+
 """

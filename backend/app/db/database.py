@@ -112,6 +112,7 @@ from app.db.repositories.film_repository import (  # noqa: E402
     upsert_film,
 )
 from app.db.repositories.frame_repository import (  # noqa: E402
+    get_frame,
     list_frames_for_film,
     list_images_for_film,
     mark_frame_downloaded,
@@ -120,6 +121,10 @@ from app.db.repositories.frame_repository import (  # noqa: E402
     replace_film_images,
     set_frame_selected,
     set_image_selected,
+)
+from app.db.repositories.analysis_repository import (  # noqa: E402
+    list_frame_analyses,
+    upsert_frame_analysis,
 )
 from app.db.repositories.media_asset_repository import (  # noqa: E402
     get_media_asset,

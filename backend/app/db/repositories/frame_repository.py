@@ -144,6 +144,15 @@ def list_frames_for_film(
             connection_context.__exit__(None, None, None)
 
 
+def get_frame(frame_id: int) -> dict | None:
+    with get_connection() as connection:
+        row = connection.execute(
+            "SELECT * FROM images WHERE id = ?",
+            (frame_id,),
+        ).fetchone()
+        return frame_from_row(row) if row else None
+
+
 def set_frame_selected(
     frame_id: int,
     selected: bool,

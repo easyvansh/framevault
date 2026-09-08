@@ -466,11 +466,47 @@ a {
 }
 
 .source-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--gold-bright);
   font-size: 0.86rem;
   font-weight: 700;
   text-decoration: none;
 }
+
+.shot-dna-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.shot-dna-panel {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: 1.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 1.2rem;
+  background: #0d0f11;
+  box-shadow: 0 30px 100px #000;
+}
+
+.shot-dna-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.shot-dna-header h2 { margin: 0.3rem 0 0; font-size: 2rem; }
+.shot-dna-image { width: 100%; max-height: 24rem; margin: 1rem 0; border-radius: 0.8rem; object-fit: contain; background: #050607; }
+.shot-dna-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
+.shot-dna-grid article { display: grid; gap: 0.3rem; padding: 0.9rem; border: 1px solid var(--line); border-radius: 0.8rem; background: rgba(255,255,255,0.04); }
+.shot-dna-grid span, .shot-dna-note { color: var(--muted); font-size: 0.82rem; }
+.shot-dna-grid strong { font-size: 1.2rem; }
+.palette-row { display: flex; height: 3.6rem; margin-top: 0.8rem; overflow: hidden; border-radius: 0.7rem; }
+.palette-row div { min-width: 2rem; flex-grow: 1; }
+.shot-dna-note { margin: 0.8rem 0 0; }
 
 .source-link:hover {
   text-decoration: underline;
@@ -520,4 +556,6 @@ a {
   .quick-actions {
     grid-template-columns: 1fr 1fr;
   }
+
+  .shot-dna-grid { grid-template-columns: 1fr 1fr; }
 }

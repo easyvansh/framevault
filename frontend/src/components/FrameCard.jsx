@@ -1,6 +1,6 @@
 import { resolveMediaUrl } from "../api/client";
 
-export default function FrameCard({ frame, onToggle }) {
+export default function FrameCard({ frame, onToggle, onAnalyze }) {
   return (
     <article className={`image-card ${frame.selected ? "selected" : ""}`}>
       <button className="block w-full text-left" onClick={() => onToggle(frame)}>
@@ -11,6 +11,7 @@ export default function FrameCard({ frame, onToggle }) {
           {frame.selected ? "Selected" : "Select Frame"}
         </button>
         {frame.downloaded && <span className="status-chip selected">Downloaded</span>}
+        <button className="source-link" onClick={() => onAnalyze(frame)}>Shot DNA</button>
         <a className="source-link" href={resolveMediaUrl(frame.source_url)} target="_blank" rel="noreferrer">
           Source
         </a>

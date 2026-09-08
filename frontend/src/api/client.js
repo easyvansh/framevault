@@ -53,3 +53,5 @@ export const uploadVideo = (file) => {
   data.append("file", file);
   return request({ method: "post", url: "/api/ingestion/videos", data });
 };
+export const analyzeFrame = (frameId) => request({ method: "post", url: `/api/frames/${frameId}/analysis` });
+export const getFrameAnalysis = (frameId) => request({ method: "get", url: `/api/frames/${frameId}/analysis` });
