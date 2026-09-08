@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 
 APP_NAME = "FrameVault"
 APP_VERSION = "1.1.0"
+ROOT_DIR = Path(__file__).resolve().parents[3]
+STORAGE_DIR = ROOT_DIR / "storage"
 MAX_UPLOAD_BYTES = int(os.getenv("FRAMEVAULT_MAX_UPLOAD_BYTES", 25 * 1024 * 1024))
 MAX_VIDEO_UPLOAD_BYTES = int(
     os.getenv("FRAMEVAULT_MAX_VIDEO_UPLOAD_BYTES", 2 * 1024 * 1024 * 1024)
@@ -15,6 +18,8 @@ FFPROBE_PATH = os.getenv("FRAMEVAULT_FFPROBE_PATH", "ffprobe")
 DEFAULT_ALLOWED_ORIGINS = (
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
 )
 
 

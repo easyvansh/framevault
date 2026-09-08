@@ -2,12 +2,18 @@ import axios from "axios";
 
 const baseURLCandidates = [
   import.meta.env.VITE_API_URL,
-  "",
+  import.meta.env.DEV ? "" : undefined,
   "http://127.0.0.1:8001",
   "http://127.0.0.1:8000",
 ].filter((value, index, values) => value !== undefined && values.indexOf(value) === index);
 
 let activeBaseURL = baseURLCandidates[0];
+
+export function resolveMediaUrl(value) {
+  if (!value || /^(https?:|data:|blob:)/i.test(value)) return value;
+  const path = value.startsWith("/") ? value : `/${value}`;
+  return `${activeBaseURL}${path}`;
+}
 
 async function request(config) {
   let lastError;
@@ -37,3 +43,13 @@ export const listImages = (filmId) => request({ method: "get", url: `/api/films/
 export const setImageSelected = (imageId, selected) => request({ method: "post", url: `/api/images/${imageId}/select`, data: { selected } });
 export const downloadSelected = (filmId) => request({ method: "post", url: "/api/download/selected", data: { film_id: filmId } });
 export const downloadAll = (filmId) => request({ method: "post", url: "/api/download/all", data: { film_id: filmId } });
+export const uploadImages = (files) => {
+  const data = new FormData();
+  files.forEach((file) => data.append("files", file));
+  return request({ method: "post", url: "/api/ingestion/images", data });
+};
+export const uploadVideo = (file) => {
+  const data = new FormData();
+  data.append("file", file);
+  return request({ method: "post", url: "/api/ingestion/videos", data });
+};

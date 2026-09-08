@@ -23,6 +23,18 @@ def test_health(client: TestClient) -> None:
     assert response.status_code == 200
 
 
+def test_preview_origin_is_allowed(client: TestClient) -> None:
+    response = client.options(
+        "/api/films",
+        headers={
+            "Origin": "http://127.0.0.1:4173",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:4173"
+
+
 def test_canonical_and_legacy_frame_routes(client: TestClient) -> None:
     film, frame = seed_frame()
 

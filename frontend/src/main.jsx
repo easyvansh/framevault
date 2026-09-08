@@ -6,6 +6,7 @@ import SearchPage from "./pages/SearchPage";
 import CuratorPage from "./pages/CuratorPage";
 import LibraryPage from "./pages/LibraryPage";
 import FrameVaultLogo from "./components/FrameVaultLogo";
+import IngestPage from "./pages/IngestPage";
 
 function App() {
   const [view, setView] = useState("search");
@@ -51,6 +52,9 @@ function App() {
           <button className={view === "library" ? "nav-active" : "nav-button"} onClick={() => { refreshFilms(); setView("library"); }}>
             Library
           </button>
+          <button className={view === "ingest" ? "nav-active" : "nav-button"} onClick={() => setView("ingest")}>
+            Ingest
+          </button>
         </nav>
       </header>
 
@@ -61,6 +65,7 @@ function App() {
             <CuratorPage filmId={activeFilmId} onBack={() => setView("search")} onDownloaded={refreshFilms} />
           )}
           {view === "library" && <LibraryPage films={films} onOpenFilm={openCurator} onRefresh={refreshFilms} />}
+          {view === "ingest" && <IngestPage onImported={refreshFilms} />}
         </section>
       </main>
     </div>
