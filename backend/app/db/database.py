@@ -44,6 +44,42 @@ def get_connection():
 def init_db() -> None:
     with get_connection() as connection:
         connection.executescript(SCHEMA_SQL)
+        _migrate_legacy_schema(connection)
+
+
+def _migrate_legacy_schema(connection: sqlite3.Connection) -> None:
+    """Apply safe additive migrations to databases created before V2."""
+    columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(images)").fetchall()
+    }
+    additions = {
+        "source_type": "TEXT NOT NULL DEFAULT 'filmgrab'",
+        "source_identifier": "TEXT",
+        "content_hash": "TEXT",
+        "ingestion_status": "TEXT NOT NULL DEFAULT 'active'",
+        "ingested_at": "TEXT",
+    }
+
+    for name, definition in additions.items():
+        if name not in columns:
+            connection.execute(f"ALTER TABLE images ADD COLUMN {name} {definition}")
+
+    connection.execute(
+        """
+        UPDATE images
+        SET
+            source_identifier = COALESCE(source_identifier, source_url),
+            ingested_at = COALESCE(ingested_at, created_at)
+        WHERE source_identifier IS NULL OR ingested_at IS NULL
+        """
+    )
+    connection.execute(
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS uq_images_source_identity
+        ON images (film_id, source_type, source_identifier)
+        """
+    )
 
 
 # Compatibility exports.

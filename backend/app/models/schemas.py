@@ -20,6 +20,12 @@ class FrameRecord(BaseModel):
     width: int | None = None
     height: int | None = None
     alt_text: str | None = None
+    source_type: str = "filmgrab"
+    source_identifier: str
+    content_hash: str | None = None
+    ingestion_status: str = "active"
+    ingested_at: str | None = None
+    updated_at: str | None = None
 
 
 class FilmRecord(BaseModel):

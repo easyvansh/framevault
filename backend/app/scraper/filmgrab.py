@@ -149,6 +149,9 @@ def extract_images_from_film_page(url: str) -> list[dict]:
                 "width": width,
                 "height": height,
                 "alt_text": alt_text,
+                "source_type": "filmgrab",
+                "source_identifier": normalised,
+                "ingestion_status": "active",
             }
         )
 

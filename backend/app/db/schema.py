@@ -19,10 +19,16 @@ CREATE TABLE IF NOT EXISTS images (
     width INTEGER,
     height INTEGER,
     alt_text TEXT,
+    source_type TEXT NOT NULL DEFAULT 'filmgrab',
+    source_identifier TEXT NOT NULL,
+    content_hash TEXT,
+    ingestion_status TEXT NOT NULL DEFAULT 'active',
+    ingested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (film_id) REFERENCES films(id) ON DELETE CASCADE,
-    UNIQUE (film_id, source_url)
+    UNIQUE (film_id, source_url),
+    UNIQUE (film_id, source_type, source_identifier)
 );
 
 CREATE TABLE IF NOT EXISTS scrape_jobs (
@@ -35,4 +41,5 @@ CREATE TABLE IF NOT EXISTS scrape_jobs (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (film_id) REFERENCES films(id) ON DELETE SET NULL
 );
+
 """

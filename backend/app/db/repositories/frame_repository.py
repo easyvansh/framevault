@@ -18,6 +18,12 @@ def frame_from_row(row: dict) -> dict:
         "width": row.get("width"),
         "height": row.get("height"),
         "alt_text": row.get("alt_text"),
+        "source_type": row.get("source_type", "filmgrab"),
+        "source_identifier": row.get("source_identifier") or row["source_url"],
+        "content_hash": row.get("content_hash"),
+        "ingestion_status": row.get("ingestion_status", "active"),
+        "ingested_at": row.get("ingested_at"),
+        "updated_at": row.get("updated_at"),
     }
 
 
@@ -26,11 +32,6 @@ def replace_film_frames(
     frames: list[dict],
 ) -> list[dict]:
     with get_connection() as connection:
-        connection.execute(
-            "DELETE FROM images WHERE film_id = ?",
-            (film_id,),
-        )
-
         for frame in frames:
             connection.execute(
                 """
@@ -40,10 +41,15 @@ def replace_film_frames(
                     preview_url,
                     width,
                     height,
-                    alt_text
+                    alt_text,
+                    source_type,
+                    source_identifier,
+                    content_hash,
+                    ingestion_status
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON CONFLICT(film_id, source_url) DO UPDATE SET
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(film_id, source_type, source_identifier) DO UPDATE SET
+                    source_url = excluded.source_url,
                     preview_url = COALESCE(
                         excluded.preview_url,
                         images.preview_url
@@ -60,6 +66,11 @@ def replace_film_frames(
                         excluded.alt_text,
                         images.alt_text
                     ),
+                    content_hash = COALESCE(
+                        excluded.content_hash,
+                        images.content_hash
+                    ),
+                    ingestion_status = excluded.ingestion_status,
                     updated_at = CURRENT_TIMESTAMP
                 """,
                 (
@@ -69,6 +80,10 @@ def replace_film_frames(
                     frame.get("width"),
                     frame.get("height"),
                     frame.get("alt_text"),
+                    frame.get("source_type", "filmgrab"),
+                    frame.get("source_identifier", frame["source_url"]),
+                    frame.get("content_hash"),
+                    frame.get("ingestion_status", "active"),
                 ),
             )
 
