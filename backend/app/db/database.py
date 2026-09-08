@@ -58,8 +58,12 @@ from app.db.repositories.film_repository import (  # noqa: E402
     upsert_film,
 )
 from app.db.repositories.frame_repository import (  # noqa: E402
+    list_frames_for_film,
     list_images_for_film,
+    mark_frame_downloaded,
     mark_image_downloaded,
+    replace_film_frames,
     replace_film_images,
+    set_frame_selected,
     set_image_selected,
 )

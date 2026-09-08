@@ -39,20 +39,20 @@ def scrape(request: ScrapeRequest) -> dict:
             request.thumbnail_url,
         )
 
-        images = extract_images_from_film_page(
+        frames = extract_images_from_film_page(
             str(request.url)
         )
 
-        image_records = database.replace_film_images(
+        frame_records = database.replace_film_frames(
             film["id"],
-            images,
+            frames,
         )
 
         film = database.get_film(film["id"])
 
         return {
             "film": film,
-            "images": image_records,
+            "images": frame_records,
         }
 
     except FilmGrabError as exc:

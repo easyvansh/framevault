@@ -31,6 +31,8 @@ async function request(config) {
 export const searchFilmGrab = (query) => request({ method: "get", url: "/api/search", params: { q: query } });
 export const scrapeFilm = (payload) => request({ method: "post", url: "/api/scrape", data: payload });
 export const listFilms = () => request({ method: "get", url: "/api/films" });
+export const listFrames = (filmId) => request({ method: "get", url: `/api/films/${filmId}/frames` });
+export const setFrameSelected = (frameId, selected) => request({ method: "post", url: `/api/frames/${frameId}/select`, data: { selected } });
 export const listImages = (filmId) => request({ method: "get", url: `/api/films/${filmId}/images` });
 export const setImageSelected = (imageId, selected) => request({ method: "post", url: `/api/images/${imageId}/select`, data: { selected } });
 export const downloadSelected = (filmId) => request({ method: "post", url: "/api/download/selected", data: { film_id: filmId } });

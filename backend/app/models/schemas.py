@@ -1,4 +1,5 @@
-from pydantic import BaseModel, HttpUrl
+
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class FilmResult(BaseModel):
@@ -8,7 +9,7 @@ class FilmResult(BaseModel):
     thumbnail_url: str | None = None
 
 
-class ImageRecord(BaseModel):
+class FrameRecord(BaseModel):
     id: int
     film_id: int
     source_url: str
@@ -38,11 +39,14 @@ class ScrapeRequest(BaseModel):
 
 class ScrapeResponse(BaseModel):
     film: FilmRecord
-    images: list[ImageRecord]
+    images: list[FrameRecord]
 
-
-class SelectImageRequest(BaseModel):
+class SelectFrameRequest(BaseModel):
     selected: bool
+
+
+# Kept while clients migrate to frame terminology.
+SelectImageRequest = SelectFrameRequest
 
 
 class DownloadRequest(BaseModel):
@@ -56,4 +60,4 @@ class DownloadResponse(BaseModel):
     failed: int
     destination: str
     metadata_path: str | None = None
-    errors: list[str] = []
+    errors: list[str] = Field(default_factory=list)

@@ -6,7 +6,7 @@ from app.db.database import get_connection
 from app.db.repositories.job_repository import record_scrape_success
 
 
-def image_from_row(row: dict) -> dict:
+def frame_from_row(row: dict) -> dict:
     return {
         "id": row["id"],
         "film_id": row["film_id"],
@@ -21,9 +21,9 @@ def image_from_row(row: dict) -> dict:
     }
 
 
-def replace_film_images(
+def replace_film_frames(
     film_id: int,
-    images: list[dict],
+    frames: list[dict],
 ) -> list[dict]:
     with get_connection() as connection:
         connection.execute(
@@ -31,7 +31,7 @@ def replace_film_images(
             (film_id,),
         )
 
-        for image in images:
+        for frame in frames:
             connection.execute(
                 """
                 INSERT INTO images (
@@ -64,27 +64,27 @@ def replace_film_images(
                 """,
                 (
                     film_id,
-                    image["source_url"],
-                    image.get("preview_url"),
-                    image.get("width"),
-                    image.get("height"),
-                    image.get("alt_text"),
+                    frame["source_url"],
+                    frame.get("preview_url"),
+                    frame.get("width"),
+                    frame.get("height"),
+                    frame.get("alt_text"),
                 ),
             )
 
         record_scrape_success(
             film_id,
-            len(images),
+            len(frames),
             connection=connection,
         )
 
-        return list_images_for_film(
+        return list_frames_for_film(
             film_id,
             connection=connection,
         )
 
 
-def list_images_for_film(
+def list_frames_for_film(
     film_id: int,
     selected_only: bool = False,
     connection: sqlite3.Connection | None = None,
@@ -113,7 +113,7 @@ def list_images_for_film(
         ).fetchall()
 
         return [
-            image_from_row(row)
+            frame_from_row(row)
             for row in rows
         ]
 
@@ -122,8 +122,8 @@ def list_images_for_film(
             connection_context.__exit__(None, None, None)
 
 
-def set_image_selected(
-    image_id: int,
+def set_frame_selected(
+    frame_id: int,
     selected: bool,
 ) -> dict | None:
     with get_connection() as connection:
@@ -137,7 +137,7 @@ def set_image_selected(
             """,
             (
                 1 if selected else 0,
-                image_id,
+                frame_id,
             ),
         )
 
@@ -147,14 +147,14 @@ def set_image_selected(
             FROM images
             WHERE id = ?
             """,
-            (image_id,),
+            (frame_id,),
         ).fetchone()
 
-        return image_from_row(row) if row else None
+        return frame_from_row(row) if row else None
 
 
-def mark_image_downloaded(
-    image_id: int,
+def mark_frame_downloaded(
+    frame_id: int,
     local_path: str,
 ) -> None:
     with get_connection() as connection:
@@ -167,5 +167,13 @@ def mark_image_downloaded(
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
             """,
-            (local_path, image_id),
+            (local_path, frame_id),
         )
+
+
+# Compatibility aliases for callers that still use the V1 image terminology.
+image_from_row = frame_from_row
+list_images_for_film = list_frames_for_film
+set_image_selected = set_frame_selected
+mark_image_downloaded = mark_frame_downloaded
+replace_film_images = replace_film_frames

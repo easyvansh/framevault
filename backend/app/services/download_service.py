@@ -75,7 +75,7 @@ def download_images_for_film(film_id: int, selected_only: bool) -> dict:
     if not film:
         raise LookupError("Film not found")
 
-    images = database.list_images_for_film(film_id, selected_only=selected_only)
+    frames = database.list_frames_for_film(film_id, selected_only=selected_only)
     destination_kind = "selected" if selected_only else "scraped"
     destination = STORAGE_DIR / destination_kind / _film_dir_name(film["title"])
     destination.mkdir(parents=True, exist_ok=True)
@@ -86,26 +86,26 @@ def download_images_for_film(film_id: int, selected_only: bool) -> dict:
     errors = []
     metadata_images = []
 
-    for image in images:
+    for frame in frames:
         try:
-            existing_path = image.get("local_path")
-            if image.get("downloaded") and existing_path and (ROOT_DIR / existing_path).exists():
+            existing_path = frame.get("local_path")
+            if frame.get("downloaded") and existing_path and (ROOT_DIR / existing_path).exists():
                 result = {"local_path": existing_path, "skipped": True}
             else:
-                result = download_image(image["source_url"], film["title"], selected=selected_only)
-                database.mark_image_downloaded(image["id"], result["local_path"])
+                result = download_image(frame["source_url"], film["title"], selected=selected_only)
+                database.mark_frame_downloaded(frame["id"], result["local_path"])
             skipped += 1 if result["skipped"] else 0
             downloaded += 0 if result["skipped"] else 1
             metadata_images.append(
                 {
-                    "source_url": image["source_url"],
+                    "source_url": frame["source_url"],
                     "local_path": result["local_path"],
-                    "selected": bool(image.get("selected")),
+                    "selected": bool(frame.get("selected")),
                 }
             )
         except Exception as exc:
             failed += 1
-            errors.append(f"{image['source_url']}: {exc}")
+            errors.append(f"{frame['source_url']}: {exc}")
 
     metadata_path = destination / "metadata.json"
     metadata = {
