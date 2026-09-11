@@ -66,6 +66,11 @@ def _migrate_legacy_schema(connection: sqlite3.Connection) -> None:
         if name not in columns:
             connection.execute(f"ALTER TABLE images ADD COLUMN {name} {definition}")
 
+    film_columns = {row["name"] for row in connection.execute("PRAGMA table_info(films)").fetchall()}
+    for name, definition in {"year": "INTEGER", "director": "TEXT", "cinematographer": "TEXT", "production_credits": "TEXT", "metadata_source": "TEXT", "metadata_origin": "TEXT NOT NULL DEFAULT 'source'"}.items():
+        if name not in film_columns:
+            connection.execute(f"ALTER TABLE films ADD COLUMN {name} {definition}")
+
     connection.execute(
         """
         UPDATE images
@@ -110,6 +115,7 @@ from app.db.repositories.film_repository import (  # noqa: E402
     get_film_by_url,
     list_films,
     upsert_film,
+    update_film_metadata,
 )
 from app.db.repositories.frame_repository import (  # noqa: E402
     get_frame,
@@ -130,3 +136,4 @@ from app.db.repositories.media_asset_repository import (  # noqa: E402
     get_media_asset,
     upsert_media_asset,
 )
+from app.db.repositories.shot_repository import get_shot_for_frame, list_shots, replace_shots  # noqa: E402

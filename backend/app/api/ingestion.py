@@ -21,6 +21,11 @@ from app.ingestion.video import (
     VideoToolUnavailable,
     ingest_uploaded_video,
 )
+from app.services.shot_service import (
+    ShotExtractionFailed,
+    ShotExtractionUnavailable,
+    extract_video_shots,
+)
 
 
 router = APIRouter(prefix="/api", tags=["ingestion"])
@@ -50,6 +55,29 @@ def upload_video(file: UploadFile = File(...)) -> dict:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except VideoToolUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.post("/media-assets/{media_asset_id}/shots")
+def create_video_shots(media_asset_id: int, threshold: float = Query(0.30, gt=0, lt=1)) -> dict:
+    try:
+        shots = extract_video_shots(media_asset_id, threshold)
+        return {"media_asset_id": media_asset_id, "shots": shots}
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except ShotExtractionFailed as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ShotExtractionUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.get("/media-assets/{media_asset_id}/shots")
+def get_video_shots(media_asset_id: int) -> dict:
+    asset = database.get_media_asset(media_asset_id)
+    if not asset or asset["media_type"] != "video":
+        raise HTTPException(status_code=404, detail="Video media asset not found.")
+    return {"media_asset_id": media_asset_id, "shots": database.list_shots(media_asset_id)}
 
 
 @router.get("/search", response_model=list[FilmResult])

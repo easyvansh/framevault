@@ -4,6 +4,12 @@ CREATE TABLE IF NOT EXISTS films (
     title TEXT NOT NULL,
     filmgrab_url TEXT NOT NULL UNIQUE,
     thumbnail_url TEXT,
+    year INTEGER,
+    director TEXT,
+    cinematographer TEXT,
+    production_credits TEXT,
+    metadata_source TEXT,
+    metadata_origin TEXT NOT NULL DEFAULT 'source',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -77,6 +83,22 @@ CREATE TABLE IF NOT EXISTS frame_analyses (
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (frame_id) REFERENCES images(id) ON DELETE CASCADE,
     UNIQUE (frame_id, analyzer_name, analyzer_version)
+);
+
+CREATE TABLE IF NOT EXISTS shots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    media_asset_id INTEGER NOT NULL,
+    shot_index INTEGER NOT NULL,
+    start_ms INTEGER NOT NULL,
+    end_ms INTEGER NOT NULL,
+    keyframe_frame_id INTEGER,
+    detection_method TEXT NOT NULL DEFAULT 'ffmpeg_scene',
+    threshold REAL NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (media_asset_id) REFERENCES media_assets(id) ON DELETE CASCADE,
+    FOREIGN KEY (keyframe_frame_id) REFERENCES images(id) ON DELETE SET NULL,
+    UNIQUE (media_asset_id, shot_index)
 );
 
 """

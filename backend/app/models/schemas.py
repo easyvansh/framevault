@@ -36,6 +36,19 @@ class FilmRecord(BaseModel):
     thumbnail_url: str | None = None
     image_count: int = 0
     downloaded_count: int = 0
+    year: int | None = None
+    director: str | None = None
+    cinematographer: str | None = None
+    production_credits: str | None = None
+    metadata_source: str | None = None
+    metadata_origin: str = "source"
+
+
+class FilmMetadataUpdate(BaseModel):
+    year: int | None = Field(default=None, ge=1888, le=2200)
+    director: str | None = Field(default=None, max_length=200)
+    cinematographer: str | None = Field(default=None, max_length=200)
+    production_credits: str | None = Field(default=None, max_length=1000)
 
 
 class ScrapeRequest(BaseModel):

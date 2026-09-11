@@ -8,7 +8,7 @@ from PIL import Image, ImageChops, ImageFilter, ImageStat
 
 
 ANALYZER_NAME = "shot_dna_classical"
-ANALYZER_VERSION = "1.0.0"
+ANALYZER_VERSION = "1.1.0"
 
 
 def _rounded(value: float) -> float:
@@ -57,6 +57,11 @@ def analyze_image(path: Path) -> dict:
         right = gray.crop((gray.width - half_width, 0, gray.width, gray.height)).transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         symmetry = 1 - ImageStat.Stat(ImageChops.difference(left, right)).mean[0] / 255
         edge_stat = ImageStat.Stat(gray.filter(ImageFilter.FIND_EDGES))
+        horizontal_energy = ImageStat.Stat(ImageChops.difference(gray, ImageChops.offset(gray, 1, 0))).mean[0]
+        vertical_energy = ImageStat.Stat(ImageChops.difference(gray, ImageChops.offset(gray, 0, 1))).mean[0]
+        energy_total = horizontal_energy + vertical_energy
+        orientation_confidence = abs(horizontal_energy - vertical_energy) / energy_total if energy_total else 0
+        orientation = "vertical" if horizontal_energy > vertical_energy else "horizontal"
 
         compact = gray.resize((64, 64))
         weighted_x = weighted_y = luminance_sum = 0.0
@@ -94,6 +99,12 @@ def analyze_image(path: Path) -> dict:
                 "sharpness": _rounded(edge_stat.var[0]),
                 "underexposed": brightness < 0.12,
                 "overexposed": brightness > 0.9,
+            },
+            "estimates": {
+                "dominant_line_orientation": {"value": orientation if orientation_confidence >= 0.08 else "unknown", "confidence": _rounded(orientation_confidence), "method": "directional_pixel_gradient"},
+                "horizon_roll": {"value": "unknown", "confidence": 0.0, "method": "insufficient_geometric_evidence"},
+                "shot_scale": {"value": "unknown", "confidence": 0.0, "method": "no_reliable_subject_detected"},
+                "camera_elevation": {"value": "unknown", "confidence": 0.0, "method": "insufficient_geometric_evidence"},
             },
         }
     return {"results": results, "execution_ms": round((time.perf_counter() - started) * 1000, 2)}

@@ -11,6 +11,9 @@ def film_from_row(row: dict) -> dict:
         "title": row["title"],
         "filmgrab_url": row["filmgrab_url"],
         "thumbnail_url": row.get("thumbnail_url"),
+        "year": row.get("year"), "director": row.get("director"),
+        "cinematographer": row.get("cinematographer"), "production_credits": row.get("production_credits"),
+        "metadata_source": row.get("metadata_source"), "metadata_origin": row.get("metadata_origin", "source"),
         "image_count": row.get("image_count", 0) or 0,
         "downloaded_count": row.get("downloaded_count", 0) or 0,
     }
@@ -41,6 +44,15 @@ def upsert_film(
             filmgrab_url,
             connection=connection,
         )
+
+
+def update_film_metadata(film_id: int, values: dict) -> dict | None:
+    with get_connection() as connection:
+        connection.execute(
+            "UPDATE films SET year=?, director=?, cinematographer=?, production_credits=?, metadata_origin='user', updated_at=CURRENT_TIMESTAMP WHERE id=?",
+            (values.get("year"), values.get("director"), values.get("cinematographer"), values.get("production_credits"), film_id),
+        )
+    return get_film(film_id)
 
 
 def get_film_by_url(

@@ -12,6 +12,22 @@ from app.services.analysis_service import (
 router = APIRouter(prefix="/api", tags=["frames"])
 
 
+@router.get("/frames/{frame_id}", response_model=FrameRecord)
+def get_frame(frame_id: int) -> dict:
+    frame = database.get_frame(frame_id)
+    if not frame:
+        raise HTTPException(status_code=404, detail="Frame not found")
+    return frame
+
+
+@router.get("/frames/{frame_id}/details")
+def get_frame_details(frame_id: int) -> dict:
+    frame = database.get_frame(frame_id)
+    if not frame:
+        raise HTTPException(status_code=404, detail="Frame not found")
+    return {"frame": frame, "film": database.get_film(frame["film_id"]), "media_asset": database.get_media_asset(frame["media_asset_id"]) if frame.get("media_asset_id") else None, "shot": database.get_shot_for_frame(frame_id), "analyses": database.list_frame_analyses(frame_id)}
+
+
 def _select_frame(frame_id: int, request: SelectFrameRequest) -> dict:
     frame = database.set_frame_selected(frame_id, request.selected)
 
