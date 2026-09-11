@@ -1,75 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import "./styles.css";
-import { listFilms } from "./api/client";
 import SearchPage from "./pages/SearchPage";
 import CuratorPage from "./pages/CuratorPage";
 import LibraryPage from "./pages/LibraryPage";
-import FrameVaultLogo from "./components/FrameVaultLogo";
 import IngestPage from "./pages/IngestPage";
+import AnalyzePage from "./pages/AnalyzePage";
+import FrameDetailPage from "./pages/FrameDetailPage";
+import FrameVaultLogo from "./components/FrameVaultLogo";
+
+const navClass = ({ isActive }) => isActive ? "nav-active" : "nav-button";
 
 function App() {
-  const [view, setView] = useState("search");
-  const [activeFilmId, setActiveFilmId] = useState(null);
-  const [films, setFilms] = useState([]);
-
-  async function refreshFilms() {
-    const response = await listFilms();
-    setFilms(response.data);
-  }
-
-  useEffect(() => {
-    refreshFilms().catch(() => setFilms([]));
-  }, []);
-
-  function openCurator(filmId) {
-    setActiveFilmId(filmId);
-    setView("curator");
-    refreshFilms().catch(() => {});
-  }
-
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <button className="brand" onClick={() => setView("search")}>
-          <span className="brand-mark">
-            <FrameVaultLogo className="brand-logo" />
-          </span>
-          <span>
-            <span className="brand-title">FrameVault</span>
-            <span className="brand-subtitle">Cinematography Reference Engine</span>
-          </span>
-        </button>
-        <nav className="nav">
-          <button className={view === "search" ? "nav-active" : "nav-button"} onClick={() => setView("search")}>
-            Search
-          </button>
-          {activeFilmId && (
-            <button className={view === "curator" ? "nav-active" : "nav-button"} onClick={() => setView("curator")}>
-              Curator
-            </button>
-          )}
-          <button className={view === "library" ? "nav-active" : "nav-button"} onClick={() => { refreshFilms(); setView("library"); }}>
-            Library
-          </button>
-          <button className={view === "ingest" ? "nav-active" : "nav-button"} onClick={() => setView("ingest")}>
-            Ingest
-          </button>
-        </nav>
-      </header>
-
-      <main className="page">
-        <section className="workspace">
-          {view === "search" && <SearchPage onFilmReady={openCurator} />}
-          {view === "curator" && activeFilmId && (
-            <CuratorPage filmId={activeFilmId} onBack={() => setView("search")} onDownloaded={refreshFilms} />
-          )}
-          {view === "library" && <LibraryPage films={films} onOpenFilm={openCurator} onRefresh={refreshFilms} />}
-          {view === "ingest" && <IngestPage onImported={refreshFilms} />}
-        </section>
-      </main>
-    </div>
-  );
+  const navigate = useNavigate();
+  return <div className="app-shell">
+    <header className="topbar">
+      <button className="brand" onClick={() => navigate("/")}>
+        <span className="brand-mark"><FrameVaultLogo className="brand-logo" /></span>
+        <span><span className="brand-title">FrameVault</span><span className="brand-subtitle">Cinematography Intelligence</span></span>
+      </button>
+      <nav className="nav" aria-label="Primary navigation">
+        <NavLink to="/" end className={navClass}>Discover</NavLink>
+        <NavLink to="/analyze" className={navClass}>Analyze Shot</NavLink>
+        <NavLink to="/library" className={navClass}>Library</NavLink>
+        <NavLink to="/ingest" className={navClass}>Ingest</NavLink>
+      </nav>
+    </header>
+    <main className="page"><section className="workspace"><Routes>
+      <Route path="/" element={<SearchPage onFilmReady={(id) => navigate(`/films/${id}`)} />} />
+      <Route path="/films/:filmId" element={<CuratorPage onBack={() => navigate(-1)} onDownloaded={() => {}} />} />
+      <Route path="/frames/:frameId" element={<FrameDetailPage />} />
+      <Route path="/analyze" element={<AnalyzePage />} />
+      <Route path="/library" element={<LibraryPage />} />
+      <Route path="/ingest" element={<IngestPage />} />
+      <Route path="*" element={<div className="panel p-8 text-center">Page not found.</div>} />
+    </Routes></section></main>
+  </div>;
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(document.getElementById("root")).render(<BrowserRouter><App /></BrowserRouter>);

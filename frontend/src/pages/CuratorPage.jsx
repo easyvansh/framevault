@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { analyzeFrame, downloadAll, downloadSelected, getFrameAnalysis, listFrames, setFrameSelected } from "../api/client";
+import { useNavigate, useParams } from "react-router-dom";
+import { downloadAll, downloadSelected, listFrames, setFrameSelected } from "../api/client";
 import FrameGrid from "../components/FrameGrid";
-import ShotDNA from "../components/ShotDNA";
 
-export default function CuratorPage({ filmId, onBack, onDownloaded }) {
+export default function CuratorPage({ onBack, onDownloaded }) {
+  const { filmId } = useParams();
+  const navigate = useNavigate();
   const [frames, setFrames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [downloading, setDownloading] = useState(false);
-  const [analysisFrame, setAnalysisFrame] = useState(null);
-  const [analysis, setAnalysis] = useState(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [analysisError, setAnalysisError] = useState("");
 
   const selectedCount = useMemo(() => frames.filter((frame) => frame.selected).length, [frames]);
 
@@ -69,34 +67,6 @@ export default function CuratorPage({ filmId, onBack, onDownloaded }) {
     }
   }
 
-  async function openAnalysis(frame) {
-    setAnalysisFrame(frame);
-    setAnalysis(null);
-    setAnalysisError("");
-    setAnalysisLoading(true);
-    try {
-      const response = await getFrameAnalysis(frame.id);
-      setAnalysis(response.data.at(-1) || null);
-    } catch (error) {
-      setAnalysisError(error.response?.data?.detail || error.message);
-    } finally {
-      setAnalysisLoading(false);
-    }
-  }
-
-  async function runAnalysis() {
-    setAnalysisLoading(true);
-    setAnalysisError("");
-    try {
-      const response = await analyzeFrame(analysisFrame.id);
-      setAnalysis(response.data);
-    } catch (error) {
-      setAnalysisError(error.response?.data?.detail || error.message || "Analysis failed.");
-    } finally {
-      setAnalysisLoading(false);
-    }
-  }
-
   return (
     <section className="space-y-6">
       <div className="panel p-6 text-center">
@@ -133,10 +103,9 @@ export default function CuratorPage({ filmId, onBack, onDownloaded }) {
         <div className="panel p-8 text-center text-slate-400">Loading frames...</div>
       ) : (
         <div className="filmstrip-panel">
-          <FrameGrid frames={frames} onToggle={toggleFrame} onAnalyze={openAnalysis} />
+          <FrameGrid frames={frames} onToggle={toggleFrame} onAnalyze={(frame) => navigate(`/frames/${frame.id}`)} />
         </div>
       )}
-      {analysisFrame && <ShotDNA frame={analysisFrame} analysis={analysis} loading={analysisLoading} error={analysisError} onRun={runAnalysis} onClose={() => setAnalysisFrame(null)} />}
     </section>
   );
 }

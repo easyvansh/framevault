@@ -38,6 +38,9 @@ export const searchFilmGrab = (query) => request({ method: "get", url: "/api/sea
 export const scrapeFilm = (payload) => request({ method: "post", url: "/api/scrape", data: payload });
 export const listFilms = () => request({ method: "get", url: "/api/films" });
 export const listFrames = (filmId) => request({ method: "get", url: `/api/films/${filmId}/frames` });
+export const getFrame = (frameId) => request({ method: "get", url: `/api/frames/${frameId}` });
+export const getFrameDetails = (frameId) => request({ method: "get", url: `/api/frames/${frameId}/details` });
+export const updateFilmMetadata = (filmId, data) => request({ method: "patch", url: `/api/films/${filmId}/metadata`, data });
 export const setFrameSelected = (frameId, selected) => request({ method: "post", url: `/api/frames/${frameId}/select`, data: { selected } });
 export const listImages = (filmId) => request({ method: "get", url: `/api/films/${filmId}/images` });
 export const setImageSelected = (imageId, selected) => request({ method: "post", url: `/api/images/${imageId}/select`, data: { selected } });
@@ -53,5 +56,7 @@ export const uploadVideo = (file) => {
   data.append("file", file);
   return request({ method: "post", url: "/api/ingestion/videos", data });
 };
+export const extractVideoShots = (assetId, threshold = 0.3) => request({ method: "post", url: `/api/media-assets/${assetId}/shots`, params: { threshold } });
+export const getVideoShots = (assetId) => request({ method: "get", url: `/api/media-assets/${assetId}/shots` });
 export const analyzeFrame = (frameId) => request({ method: "post", url: `/api/frames/${frameId}/analysis` });
 export const getFrameAnalysis = (frameId) => request({ method: "get", url: `/api/frames/${frameId}/analysis` });
