@@ -22,6 +22,8 @@ def test_classical_analysis_is_deterministic(tmp_path: Path) -> None:
     assert first["color"]["temperature_bias"] < 0
     assert 0 <= first["luminance"]["brightness"] <= 1
     assert 0 <= first["composition"]["symmetry"] <= 1
+    assert set(first["estimates"]) == {"dominant_line_orientation", "horizon_roll", "shot_scale", "camera_elevation"}
+    assert all("confidence" in estimate and "method" in estimate for estimate in first["estimates"].values())
 
 
 def test_analysis_api_persists_and_updates_same_version(
@@ -59,3 +61,14 @@ def test_remote_only_frame_returns_actionable_conflict(client: TestClient) -> No
     response = client.post(f"/api/frames/{frame['id']}/analysis")
     assert response.status_code == 409
     assert "Download" in response.json()["detail"]
+
+
+def test_frame_details_include_editable_film_provenance(client: TestClient) -> None:
+    film = database.upsert_film("Arrival", "https://example.com/arrival", None)
+    frame = database.replace_film_frames(film["id"], [{"source_url": "https://example.com/a.jpg"}])[0]
+    updated = client.patch(f"/api/films/{film['id']}/metadata", json={"year": 2016, "director": "Denis Villeneuve", "cinematographer": "Bradford Young", "production_credits": "Source-checked credits"})
+    details = client.get(f"/api/frames/{frame['id']}/details")
+    assert updated.status_code == details.status_code == 200
+    assert details.json()["film"]["director"] == "Denis Villeneuve"
+    assert details.json()["film"]["metadata_origin"] == "user"
+    assert details.json()["shot"] is None
