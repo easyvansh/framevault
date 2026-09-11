@@ -132,6 +132,9 @@ a {
   gap: 0.55rem;
 }
 
+.nav-button, .nav-active { gap: 0.38rem; }
+.mobile-menu { display: none; padding: 0.5rem; border: 1px solid var(--line); border-radius: 0.7rem; color: white; background: rgba(255,255,255,.06); }
+
 .page {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
@@ -496,6 +499,7 @@ a {
   background: #0d0f11;
   box-shadow: 0 30px 100px #000;
 }
+.shot-dna-embedded { position: static; width: min(760px, 100%); margin: 2rem auto; }
 
 .shot-dna-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .shot-dna-header h2 { margin: 0.3rem 0 0; font-size: 2rem; }
@@ -615,9 +619,8 @@ a {
     flex-direction: column;
   }
 
-  .nav {
-    justify-content: flex-start;
-  }
+  .desktop-nav { display: none; }
+  .mobile-menu { display: inline-flex; }
 
   .search-panel {
     grid-template-columns: 1fr;

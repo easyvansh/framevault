@@ -1,15 +1,13 @@
 import { resolveMediaUrl } from "../api/client";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog";
 
 const percent = (value) => `${Math.round(value * 100)}%`;
 
-export default function ShotDNA({ frame, analysis, loading, error, onClose, onRun }) {
+function Content({ frame, analysis, loading, error, onRun, embedded }) {
   const data = analysis?.results;
-  return (
-    <div className="shot-dna-backdrop" role="presentation" onClick={onClose}>
-      <section className="shot-dna-panel" role="dialog" aria-modal="true" aria-label="Frame Shot DNA" onClick={(event) => event.stopPropagation()}>
+  return <>
         <div className="shot-dna-header">
-          <div><div className="eyebrow">Measured signals</div><h2>Shot DNA</h2></div>
-          <button className="button-ghost" onClick={onClose}>Close</button>
+          <div><div className="eyebrow">Measured signals</div>{embedded ? <h2>Shot DNA</h2> : <><DialogTitle>Shot DNA</DialogTitle><DialogDescription className="sr-only">Classical visual analysis for this frame</DialogDescription></>}</div>
         </div>
         <img className="shot-dna-image" src={resolveMediaUrl(frame.preview_url || frame.source_url)} alt={frame.alt_text || "Analyzed frame"} />
         {loading && <div className="status-message">Analyzing frame…</div>}
@@ -32,7 +30,10 @@ export default function ShotDNA({ frame, analysis, loading, error, onClose, onRu
           </p>
           <p className="shot-dna-note">Analyzer {analysis.analyzer_name} · version {analysis.analyzer_version} · {analysis.execution_ms.toFixed(1)} ms</p>
         </>}
-      </section>
-    </div>
-  );
+  </>;
+}
+
+export default function ShotDNA({ frame, analysis, loading, error, onClose, onRun, embedded = false }) {
+  if (embedded) return <section className="shot-dna-panel shot-dna-embedded"><Content {...{ frame, analysis, loading, error, onRun, embedded }} /></section>;
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent className="shot-dna-panel"><Content {...{ frame, analysis, loading, error, onRun }} /></DialogContent></Dialog>;
 }

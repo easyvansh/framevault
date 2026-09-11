@@ -45,6 +45,7 @@ def test_canonical_and_legacy_frame_routes(client: TestClient) -> None:
     assert legacy.status_code == 200
     assert canonical.json() == legacy.json()
     assert canonical.json()[0]["id"] == frame["id"]
+    assert client.get(f"/api/frames/{frame['id']}").json()["id"] == frame["id"]
 
 
 def test_selection_routes_share_frame_behavior(client: TestClient) -> None:

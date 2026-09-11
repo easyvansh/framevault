@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, NavLink, Route, Routes, useNavigate } from "react-router-dom";
@@ -40,3 +41,12 @@ function App() {
 }
 
 createRoot(document.getElementById("root")).render(<BrowserRouter><App /></BrowserRouter>);
+=======
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./styles.css";
+import { ErrorBoundary, routes } from "./App";
+
+const router = createBrowserRouter(routes);
+createRoot(document.getElementById("root")).render(<ErrorBoundary><RouterProvider router={router} /></ErrorBoundary>);
+>>>>>>> 1b5c36d (updated to v2)
