@@ -39,11 +39,8 @@ export const scrapeFilm = (payload) => request({ method: "post", url: "/api/scra
 export const listFilms = () => request({ method: "get", url: "/api/films" });
 export const listFrames = (filmId) => request({ method: "get", url: `/api/films/${filmId}/frames` });
 export const getFrame = (frameId) => request({ method: "get", url: `/api/frames/${frameId}` });
-<<<<<<< HEAD
 export const getFrameDetails = (frameId) => request({ method: "get", url: `/api/frames/${frameId}/details` });
 export const updateFilmMetadata = (filmId, data) => request({ method: "patch", url: `/api/films/${filmId}/metadata`, data });
-=======
->>>>>>> 1b5c36d (updated to v2)
 export const setFrameSelected = (frameId, selected) => request({ method: "post", url: `/api/frames/${frameId}/select`, data: { selected } });
 export const listImages = (filmId) => request({ method: "get", url: `/api/films/${filmId}/images` });
 export const setImageSelected = (imageId, selected) => request({ method: "post", url: `/api/images/${imageId}/select`, data: { selected } });

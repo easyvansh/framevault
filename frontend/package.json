@@ -16,11 +16,6 @@
     "@radix-ui/react-toast": "^1.2.23",
     "@radix-ui/react-tooltip": "^1.2.16",
     "axios": "^1.7.9",
-<<<<<<< HEAD
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.8.2",
-=======
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -30,7 +25,6 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.18.3",
     "tailwind-merge": "^3.6.0",
->>>>>>> 1b5c36d (updated to v2)
     "vite": "^6.0.7"
   },
   "devDependencies": {
@@ -39,14 +33,9 @@
     "@testing-library/user-event": "^14.6.7",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
-<<<<<<< HEAD
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17"
-=======
     "jsdom": "^29.1.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "vitest": "^4.1.11"
->>>>>>> 1b5c36d (updated to v2)
   }
 }
